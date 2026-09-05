@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	{% if true %}
+		<p class="bold">
+			CLASSEMENT FINAL DU MAIN EVENT :
+		</p>
+
+		<table class="table">
+			<thead class="table-active">
+				<tr>
+					<th scope="col">Classement</th>
+					<th scope="col">Pseudo</th>
+					{# <th scope="col">Club</th> #}
+					<th scope="col">Prix</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for player in players %}
+					<tr>
+						<th scope="row">
+							{% if loop.index == 1 %}
+								1<sup>er</sup>
+							{% else %}
+								{{ loop.index }}<sup>e</sup>
+							{% endif %}
+						</th>
+						<td>{{ player.pseudo }}</td>
+						{# <td>{{ player.club }}</td> #}
+						<td>{{ player.prix }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% else %}
+		<p class="bold">Classement à venir.</p>
+	{% endif %}
+{% endblock %}

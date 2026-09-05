@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<p class="bold">
+		STACK DE DÉPART : 30 000 JETONS (la structure est susceptible d'évoluer)<br>
+		ROUNDS DE 30 MINUTES
+	</p>
+
+	<table class="table">
+		<thead class="table-active">
+			<tr>
+				<th scope="col">Niveau</th>
+				<th scope="col">Small Blinde</th>
+				<th scope="col">Big Blinde</th>
+				{# <th scope="col">Ante Big Blinde</th> #}
+				<th scope="col">Heure début</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr class="table-warning">
+				<th colspan="5">Début du tournoi 09H30</th>
+			</tr>
+
+			{% for level in structure %}
+				{% if level.pause %}
+					<tr class="table-warning">
+						<th colspan="3">{{ level.label }}</th>
+						<td>{{ level.time }}</td>
+					</tr>
+				{% else %}
+					<tr>
+						<th scope="row">{{ level.number }}</th>
+						<td>{{ level.SB }}</td>
+						<td>{{ level.BB }}</td>
+						{# <td>{{ level.Ante }}</td> #}
+						<td>{{ level.time }}</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

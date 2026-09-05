@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	{% if error %}
+		<div class="alert alert-warning">{{ error }}</div>
+	{% else %}
+		<p class="bold">
+			DERNIÈRE MISE À JOUR :
+			{{ date }}
+		</p>
+	{% endif %}
+
+	<p class="bold">
+		LISTE DES JOUEURS DÉJÀ INSCRITS ({{ nbPlayers }}
+		/ 198) :
+	</p>
+
+	<table class="table">
+		<thead class="table-active">
+			<tr>
+				<th scope="col">Numéro</th>
+				<th scope="col">Pseudo</th>
+				<th scope="col">Prénom</th>
+				<th scope="col">Nom</th>
+				<th scope="col">Club</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for player in players %}
+				<tr>
+					<th scope="row">{{ loop.index }}</th>
+					<td>{{ player.pseudo }}</td>
+					<td>{{ player.prenom }}</td>
+					<td>{{ player.nom }}</td>
+					<td>{{ player.club }}</td>
+				</tr>
+			{% endfor %}
+			{% set d = nbPlayers + 1 %}
+			{% for i in d..198 %}
+				<tr>
+					<th scope="row">{{ i }}</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

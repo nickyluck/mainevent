@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<p class="bold">
+		LA DOTATION EST SUSCEPTIBLE D'ÉVOLUER ET GARANTIE UNIQUEMENT SI LES 198 JOUEURS SONT ATTEINTS.<br>
+		DE NOMBREUSES RÉCOMPENSES SERONT ÉGALEMENT DISTRIBUÉES TOUT AU LONG DE LA JOURNÉE.
+	</p>
+
+	<table class="table">
+		<thead class="table-active">
+			<tr>
+				<th scope="col">Classement</th>
+				<th scope="col">Prix</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for line in dotation %}
+				<tr>
+					<th scope="row">{{ line.classement | raw}}</th>
+					<td>{{ line.prix }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

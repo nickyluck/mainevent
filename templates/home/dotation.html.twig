@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<p class="bold">
+		DOTATION A VENIR
+	</p>
+
+	{# 
+	<p class="bold">
+			LA DOTATION EST SUSCEPTIBLE D'ÉVOLUER (la dotation affichée est calculée pour 150 joueurs environ)
+	</p>
+
+	<p class="bold">
+		En plus de la dotation, des mysterys bountys seront attribués aléatoirement lors de l'élimination d'un joueur.
+	</p>
+
+	<table class="table">
+		<thead class="table-active">
+			<tr>
+				<th scope="col">Classement</th>
+				<th scope="col">Prix</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for line in dotation %}
+				<tr>
+					<th scope="row">{{ line.classement | raw}}</th>
+					<td>{{ line.prix }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	 #}
+{% endblock %}
