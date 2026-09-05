@@ -1,0 +1,77 @@
+name: Deploy FTP OVH
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify FTP configuration
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER_DIR: ${{ vars.FTP_SERVER_DIR }}
+        run: |
+          if [ -z "$FTP_SERVER" ] || [ -z "$FTP_USERNAME" ] || [ -z "$FTP_PASSWORD" ]; then
+            echo "Secrets manquants : FTP_SERVER, FTP_USERNAME et/ou FTP_PASSWORD." >&2
+            exit 1
+          fi
+          if [ -z "$FTP_SERVER_DIR" ]; then
+            echo "Variable FTP_SERVER_DIR manquante (slash final recommandé, racine du projet Symfony)." >&2
+            exit 1
+          fi
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: ctype, iconv
+          coverage: none
+          tools: composer
+
+      # APP_ENV=prod : sinon post-install cache:clear charge des bundles absents avec --no-dev.
+      - name: Install dependencies
+        env:
+          APP_ENV: prod
+          APP_DEBUG: "0"
+          APP_SECRET: warmup_only_not_used_in_prod
+          COMPTES_API_URL: https://api.vhep.fr
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Discard CI cache before upload
+        run: |
+          rm -rf var/cache var/log
+          mkdir -p var/cache var/log
+
+      # Ne pas utiliser dangerous-clean-slate : un échec après purge laisserait le site vide.
+      # .env.local.php du serveur (APP_SECRET, COMPTES_API_URL) n'est ni envoyé ni supprimé.
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ vars.FTP_SERVER_DIR }}
+          protocol: ftp
+          log-level: standard
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/.env
+            **/.env.local
+            **/.env.local.php
+            **/.env.*.local
+            **/tests/**
+            **/var/cache/**
+            **/var/log/**
+            **/.htpasswd*
+            **/.gitignore
+            **/README.md
