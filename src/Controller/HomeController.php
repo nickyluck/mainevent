@@ -93,7 +93,6 @@ class HomeController extends AbstractController
             'active' => 'liste',
             'players' => $result['players'],
             'nbPlayers' => count($result['players']),
-            'date' => $result['date'],
             'error' => $result['error'],
         ]);
     }

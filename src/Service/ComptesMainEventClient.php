@@ -15,7 +15,7 @@ class ComptesMainEventClient
     }
 
     /**
-     * @return array{players: list<array{pseudo: string, prenom: string, nom: string, club: string}>, date: string, error: ?string}
+     * @return array{players: list<array{pseudo: string, prenom: string, nom: string, club: string}>, error: ?string}
      */
     public function fetchParticipants(): array
     {
@@ -47,7 +47,6 @@ class ComptesMainEventClient
 
         return [
             'players' => $players,
-            'date' => $this->formatDate(isset($payload['generated_at']) ? (string) $payload['generated_at'] : ''),
             'error' => null,
         ];
     }
@@ -132,27 +131,13 @@ class ComptesMainEventClient
         return 0;
     }
 
-    private function formatDate(string $generatedAt): string
-    {
-        try {
-            $date = $generatedAt !== ''
-                ? new \DateTimeImmutable($generatedAt)
-                : new \DateTimeImmutable();
-        } catch (\Exception) {
-            $date = new \DateTimeImmutable();
-        }
-
-        return $date->format('d/m/Y (H:i:s)');
-    }
-
     /**
-     * @return array{players: list<array{pseudo: string, prenom: string, nom: string, club: string}>, date: string, error: string}
+     * @return array{players: list<array{pseudo: string, prenom: string, nom: string, club: string}>, error: string}
      */
     private function failure(): array
     {
         return [
             'players' => [],
-            'date' => '',
             'error' => "La liste des inscrits est temporairement indisponible. Merci de réessayer plus tard.",
         ];
     }
