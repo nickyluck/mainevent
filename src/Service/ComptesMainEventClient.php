@@ -57,6 +57,50 @@ class ComptesMainEventClient
      */
     private function requestJson(string $url): array
     {
+        [$json, $status] = $this->httpGet($url);
+        if ($json === null) {
+            throw new \RuntimeException('Unable to reach Comptes API');
+        }
+
+        if ($status < 200 || $status >= 300) {
+            throw new \RuntimeException("Comptes API returned HTTP $status");
+        }
+
+        $payload = json_decode($json, true);
+        if (!is_array($payload)) {
+            throw new \RuntimeException('Invalid JSON from Comptes API');
+        }
+
+        return $payload;
+    }
+
+    /**
+     * @return array{0: ?string, 1: int}
+     */
+    private function httpGet(string $url): array
+    {
+        if (function_exists('curl_init')) {
+            $curl = curl_init($url);
+            if ($curl !== false) {
+                curl_setopt_array($curl, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_TIMEOUT => self::TIMEOUT_SECONDS,
+                    CURLOPT_HTTPHEADER => [
+                        'Accept: application/json',
+                        'User-Agent: MainEvent/1.0',
+                    ],
+                ]);
+                $body = curl_exec($curl);
+                $status = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                curl_close($curl);
+
+                if (is_string($body)) {
+                    return [$body, $status];
+                }
+            }
+        }
+
         $context = stream_context_create([
             'http' => [
                 'method' => 'GET',
@@ -68,20 +112,10 @@ class ComptesMainEventClient
 
         $json = @file_get_contents($url, false, $context);
         if ($json === false) {
-            throw new \RuntimeException('Unable to reach Comptes API');
+            return [null, 0];
         }
 
-        $status = $this->statusCodeFromHeaders($http_response_header ?? []);
-        if ($status < 200 || $status >= 300) {
-            throw new \RuntimeException("Comptes API returned HTTP $status");
-        }
-
-        $payload = json_decode($json, true);
-        if (!is_array($payload)) {
-            throw new \RuntimeException('Invalid JSON from Comptes API');
-        }
-
-        return $payload;
+        return [$json, $this->statusCodeFromHeaders($http_response_header ?? [])];
     }
 
     /**
