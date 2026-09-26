@@ -29,6 +29,36 @@ header .title {
     margin-bottom: 20px;
 }
 
+.navbar .container-fluid {
+    gap: 0.75rem;
+}
+
+.navbar-toggler {
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    padding: 0.4rem 0.6rem;
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.35);
+}
+
+.btn-inscription {
+    background-color: #dc0000;
+    border-color: #dc0000;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.05rem;
+    padding: 0.45rem 1rem;
+    white-space: nowrap;
+}
+
+.btn-inscription:hover,
+.btn-inscription:focus {
+    background-color: #b00000;
+    border-color: #b00000;
+    color: #fff;
+}
+
 .navbar-nav .nav-link {
     font-weight: bold;
     color: rgb(180, 180, 180);
