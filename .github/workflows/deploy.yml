@@ -45,6 +45,10 @@ jobs:
           COMPTES_API_URL: https://api.vhep.fr
         run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
+      # Identifiant de déploiement : le front controller purge var/cache si différent.
+      - name: Write deploy id
+        run: echo "${{ github.sha }}" > public/.deploy-id
+
       # Vider le cache local : les fichiers absents seront aussi purgés sur le FTP
       # (sinon Twig/Symfony servent encore d'anciens templates compilés).
       - name: Reset cache dirs before upload
