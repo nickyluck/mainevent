@@ -18,8 +18,7 @@ class DataReader
         $file = fopen("tmp/" . DataReader::STRUCTURE_FILE, "r");
 
         $read = false;
-        while (($line = fgetcsv($file)) !== false) {
-            $line = explode(";", $line[0]);
+        while (($line = self::readCsvLine($file)) !== false) {
             if ($read) {
                 if (empty($line[0])) {
                     $level = [
@@ -57,8 +56,7 @@ class DataReader
         $file = fopen("tmp/" . DataReader::DOTATION_FILE, "r");
 
         $read = false;
-        while (($line = fgetcsv($file)) !== false) {
-            $line = explode(";", $line[0]);
+        while (($line = self::readCsvLine($file)) !== false) {
             if ($read) {
                 if ($line[0] == $line[1]) {
                     $price = [
@@ -89,8 +87,7 @@ class DataReader
         $file = fopen("tmp/dotation150.csv", "r");
 
         $read = false;
-        while (($line = fgetcsv($file)) !== false) {
-            $line = explode(";", $line[0]);
+        while (($line = self::readCsvLine($file)) !== false) {
             if ($read) {
                 if ($line[0] == $line[1]) {
                     $price = [
@@ -122,13 +119,11 @@ class DataReader
         $file = fopen("tmp/" . DataReader::RANKING_FILE, "r");
 
         $read = false;
-        while (($line = fgetcsv($file)) !== false) {
-            $line = explode(";", $line[0]);
+        while (($line = self::readCsvLine($file)) !== false) {
             if ($read) {
                 $player = [
                     'position' => $line[0],
-                    'pseudo' => $line[1],
-                    'club' => $line[2],
+                    'pseudo' => $line[1] ?? '',
                     'prix' => (array_key_exists($line[0], $prizepool)) ? $prizepool[$line[0]] : ''
                 ];
                 $players[] = $player;
@@ -149,8 +144,7 @@ class DataReader
         $file = fopen("tmp/" . DataReader::DOTATION_FILE, "r");
 
         $read = false;
-        while (($line = fgetcsv($file)) !== false) {
-            $line = explode(";", $line[0]);
+        while (($line = self::readCsvLine($file)) !== false) {
             if ($read) {
                 for ($i = $line[0]; $i <= $line[1]; $i++) {
                     $prizepool[$i] = $line[2] . " (valeur {$line[3]}€)";
@@ -162,5 +156,25 @@ class DataReader
 
         fclose($file);
         return $prizepool;
+    }
+
+    /**
+     * Lit une ligne CSV séparée par ";" et normalise l'encodage en UTF-8
+     * (Excel Windows exporte souvent en Windows-1252).
+     */
+    private static function readCsvLine($file): array|false
+    {
+        $line = fgetcsv($file, null, ';', '"', '\\');
+        if ($line === false) {
+            return false;
+        }
+
+        return array_map(static function ($value) {
+            if (!is_string($value) || $value === '' || mb_check_encoding($value, 'UTF-8')) {
+                return $value;
+            }
+
+            return mb_convert_encoding($value, 'UTF-8', 'Windows-1252');
+        }, $line);
     }
 }
